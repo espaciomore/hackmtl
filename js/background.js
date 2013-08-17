@@ -6,7 +6,7 @@
     if ( request.get ) {
       sendMessage({ "notifications": alerts });
     } else if ( request.put ) {
-      if ( alerts.indexOf( sender.tab.title ) >= 0 ){
+      if ( alerts.indexOf( sender.tab.title ) < 0 ){
         alerts.push( sender.tab.title );
       }
       sendMessage( request );
