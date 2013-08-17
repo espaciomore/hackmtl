@@ -1,4 +1,4 @@
 let-me-know
 ===========
 
-chrome extension
+chrome extension that will take user selected elements as preference for showing meaningful notifications.
