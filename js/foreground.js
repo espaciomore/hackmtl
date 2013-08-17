@@ -13,6 +13,10 @@
   $(document).on('click',function(){
     event.preventDefault();
     user_e = $(event.target);
+    if ( event.target.getAttribute('class')=='notify123' ){
+      $(this).off('click');
+      return false;
+    }
     if ( watched_e.indexOf(user_e) < 0 ){
       watched_e.push(user_e);
       activate_change_monitor();
