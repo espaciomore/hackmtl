@@ -6,7 +6,12 @@
 
   function activate_change_monitor(){
     $(document).on('change',user_e,function(){
-      messenger.sendMessage({"put": true});
+      messenger.sendMessage({
+        "put": true,
+        "element": { 
+          "name": user_e.context.className!='' ? (user_e.context.localName+'.'+user_e.context.className):user_e.context.localName,
+        } 
+      });
     });
   }
   

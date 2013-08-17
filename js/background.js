@@ -1,5 +1,5 @@
 (function(){
-  var alerts = [];
+  var alerts = {};
 
   var messenger = MESSENGER || {};
   messenger.getForegroundMessage = function( request,sender,sendMessage ) {
@@ -11,11 +11,18 @@
           sendMessage({ "template": data });
         });
       } else {
-        sendMessage({ "notifications": alerts });
+        list = [];
+        for( var title in alerts ){
+          for( var element in alerts[ title ] )
+            list.push( title+' : '+element);
+        }
+        sendMessage({ "notifications": list });
       }
     } else if ( request.put ) {
-      if ( alerts.indexOf( sender.tab.title ) < 0 ){
-        alerts.push( sender.tab.title );
+      if ( !( sender.tab.title in alerts ) ){
+        alerts[ sender.tab.title ] = {};
+        if ( !( request.element.name in alerts[sender.tab.title] ) )
+          alerts[ sender.tab.title ][ request.element.name ] = {};
       }
       sendMessage( request );
     }
