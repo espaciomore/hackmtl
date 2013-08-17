@@ -5,9 +5,9 @@
   var user_e = $();
 
   function activate_change_monitor(){
-   $(document).on('change',user_e,function(){
-    messenger.sendMessage({"put":true});
-   });
+    $(document).on('change',user_e,function(){
+      messenger.sendMessage({"put": true});
+    });
   }
   
   $(document).on('click',function(){
@@ -19,4 +19,14 @@
     }
   });
 
+  messenger.getTemplate = function( message ){
+    chrome.runtime.sendMessage( message,function( response ) { 
+      $('body').prepend( $(response.template) );  
+    });
+  };
+  messenger.getTemplate({
+    "get": true,
+    "template": "control-bar.html"
+  });
+  
 })();
