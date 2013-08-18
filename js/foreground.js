@@ -14,28 +14,42 @@
       });
     });
   }
-  
-  $(document).on('click',function(){
-    event.preventDefault();
-    user_e = $(event.target);
-    if ( event.target.getAttribute('class')=='notify123' ){
-      $(this).off('click');
+  function activate_selection(){
+    $(document).on('click',function(){
+      event.preventDefault();
+      user_e = $(event.target);
+      if ( watched_e.indexOf(user_e) < 0 ){
+        watched_e.push(user_e);
+        activate_change_monitor();
+      }
       return false;
-    }
-    if ( watched_e.indexOf(user_e) < 0 ){
-      watched_e.push(user_e);
-      activate_change_monitor();
-    }
-  });
+    });
+  }
+
+  function activate_controls(){
+    // START selecting button
+    $('button.start-selecting').on('click',function(){
+      $(this).attr('disabled',true);
+      $('button.stop-selecting').removeAttr('disabled');
+      activate_selection();
+    });
+    // STOP selecting button
+    $('button.stop-selecting').on('click',function(){
+      $(this).attr('disabled',true);
+      $('button.start-selecting').removeAttr('disabled');    
+      $(document).off('click');
+    });  
+  }
 
   messenger.getTemplate = function( message ){
     chrome.runtime.sendMessage( message,function( response ) { 
       $('body').prepend( $(response.template) );  
+      activate_controls();
     });
   };
   messenger.getTemplate({
     "get": true,
     "template": "control-bar.html"
   });
-  
+
 })();
