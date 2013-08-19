@@ -25,7 +25,6 @@
       return false;
     });
   }
-
   function activate_controls(){
     // START selecting button
     $('button.start-selecting').on('click',function(){
