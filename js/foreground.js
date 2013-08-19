@@ -42,7 +42,11 @@
 
   messenger.getTemplate = function( message ){
     chrome.runtime.sendMessage( message,function( response ) { 
-      $('body').prepend( $(response.template) );  
+      $('body').each(function(){
+        console.log($(this));
+        if( $(this)[0].baseURI == $(document)[0].baseURI )
+          $(this).prepend( $(response.template) ); 
+      });
       activate_controls();
     });
   };
