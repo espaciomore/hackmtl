@@ -28,7 +28,15 @@
           });
         }
       }
-      sendMessage( request );
+    } else if ( request['delete'] ) {
+      if ( request.notification!=undefined ){
+        delete alerts[ request.notification ];
+        if ( Object.keys(alerts).length == 0 ) {
+          chrome.browserAction.setIcon({
+            path: "../images/bells/bell_19_green.png"
+          });
+        }
+      }
     }
     return true;
   };
