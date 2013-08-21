@@ -3,7 +3,7 @@
 
   function bind_notification( id ){
     $('#'+id).on('click',function(){
-      var _caption = $(event.target).text();
+      var _caption = $(this).text();
       messenger.sendMessage({ "delete":true, "notification": $.trim( _caption.split(':',2)[0] ) });
       delete notifications[ id ];
       $(this).remove();
