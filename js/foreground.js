@@ -4,24 +4,30 @@
   var watched_e = [];
   var user_e = $();
 
-  function activate_change_monitor(){
-    $(document).on('change',user_e,function(){
-      messenger.sendMessage({
-        "put": true,
-        "element": { 
-          "name": user_e.context.className!='' ? (user_e.context.localName+'.'+user_e.context.className):user_e.context.localName,
-        } 
-      });
+  function activate_change_monitor( element ){
+    $(element).on('DOMSubtreeModified',function(){
+      event.preventDefault();
+      user_e = $(this);
+      if ( user_e.has($(event.target)).length != 0 )
+        messenger.sendMessage({
+          "put": true,
+          "element": { 
+            "name": user_e.attr('class')!='' ? (user_e[0].tagName+'.'+user_e.attr('class')):user_e[0].tagName,
+          } 
+        });
     });
   }
   function activate_selection(){
     $(document).on('click',function(){
       event.preventDefault();
+      event.stopPropagation();
+      event.cancelBubble=true;
       user_e = $(event.target);
-      if ( watched_e.indexOf(user_e) < 0 ){
-        watched_e.push(user_e);
-        activate_change_monitor();
-      }
+      if ( $('#lmk-toolbar').has($(event.target)).length == 0 )
+        if ( watched_e.indexOf(user_e) < 0 ){
+          watched_e.push( user_e );
+          activate_change_monitor( user_e );
+        }
       return false;
     });
   }
@@ -51,9 +57,11 @@
       activate_controls();
     });
   };
-  messenger.getTemplate({
-    "get": true,
-    "template": "control-bar.html"
-  });
+  $(document).ready(function(){
+    messenger.getTemplate({
+      "get": true,
+      "template": "control-bar.html"
+    });
+  }); 
 
 })();
