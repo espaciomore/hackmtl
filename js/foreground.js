@@ -48,20 +48,20 @@
 
   messenger.getTemplate = function( message ){
     chrome.runtime.sendMessage( message,function( response ) { 
-      $('body').each(function(){
-        if( $(this)[0].baseURI == $(document)[0].baseURI ){
-          $(this).prepend( $(response.template) ); 
-          return $(this);
-        }
-      });
-      activate_controls();
+        var main = document.evaluate( '/html/body',document,null,XPathResult.ANY_TYPE,null);
+        main = main.iterateNext();
+        //if ( window.parent.document == undefined ){
+          $( main ).prepend( $(response.template) ); 
+          activate_controls();
+        //}
     });
   };
-  $(document).ready(function(){
-    messenger.getTemplate({
-      "get": true,
-      "template": "control-bar.html"
-    });
-  }); 
+  
+  if ( window.parent.document.html == undefined )
+    if ( document.URL == window.parent.location.href )
+      messenger.getTemplate({
+        "get": true,
+        "template": "control-bar.html"
+      });
 
 })();
