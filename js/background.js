@@ -21,8 +21,12 @@
     } else if ( request.put ) {
       if ( !( sender.tab.title in alerts ) ){
         alerts[ sender.tab.title ] = {};
-        if ( !( request.element.name in alerts[sender.tab.title] ) )
+        if ( !( request.element.name in alerts[sender.tab.title] ) ){
           alerts[ sender.tab.title ][ request.element.name ] = {};
+          chrome.browserAction.setIcon({
+            path: "../images/bells/bell_19_red.png"
+          });
+        }
       }
       sendMessage( request );
     }
