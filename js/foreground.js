@@ -50,10 +50,8 @@
     chrome.runtime.sendMessage( message,function( response ) { 
         var main = document.evaluate( '/html/body',document,null,XPathResult.ANY_TYPE,null);
         main = main.iterateNext();
-        //if ( window.parent.document == undefined ){
-          $( main ).prepend( $(response.template) ); 
-          activate_controls();
-        //}
+        $( main ).prepend( $(response.template) ); 
+        activate_controls();
     });
   };
   
