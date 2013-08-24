@@ -1,6 +1,6 @@
 (function(){
+  
   var alerts = [];
-  var sites = [];
   function getAlerts(){
     var list = [];
     for( var i in alerts )

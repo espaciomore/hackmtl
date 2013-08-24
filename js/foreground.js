@@ -1,13 +1,21 @@
 (function(){
+  
+  var watched_e = [];
+  
   var messenger = MESSENGER || {};
-
   messenger.register = function( message,tag ){
     chrome.runtime.sendMessage( message,function( response ) { 
       $(tag).data( 'letMeKnowID',response['id'] );
     });
   };
-
-  var watched_e = [];
+  messenger.getTemplate = function( message ){
+    chrome.runtime.sendMessage( message,function( response ) { 
+        var main = document.evaluate( '/html/body',document,null,XPathResult.ANY_TYPE,null);
+        main = main.iterateNext();
+        $( main ).prepend( $(response.template) ); 
+        activate_controls();
+    });
+  };
 
   function activate_change_monitor( notification ){
     $(notification).on('change DOMSubtreeModified',function(){
@@ -63,15 +71,6 @@
       return false;
     });  
   }
-
-  messenger.getTemplate = function( message ){
-    chrome.runtime.sendMessage( message,function( response ) { 
-        var main = document.evaluate( '/html/body',document,null,XPathResult.ANY_TYPE,null);
-        main = main.iterateNext();
-        $( main ).prepend( $(response.template) ); 
-        activate_controls();
-    });
-  };
   
   if ( window.parent.document.html == undefined )
     if ( document.URL == window.parent.location.href )
