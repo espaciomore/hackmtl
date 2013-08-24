@@ -1,20 +1,23 @@
 (function(){
   var messenger = MESSENGER || {};
 
-  var watched_e = [];
-  var user_e = $();
+  messenger.register = function( message,tag ){
+    chrome.runtime.sendMessage( message,function( response ) { 
+      $(tag).data( 'letMeKnowID',response['id'] );
+    });
+  };
 
-  function activate_change_monitor( element ){
-    $(element).on('DOMSubtreeModified',function(){
+  var watched_e = [];
+
+  function activate_change_monitor( notification ){
+    $(notification).on('change DOMSubtreeModified',function(){
       event.preventDefault();
-      user_e = $(this);
-      if ( user_e.has($(event.target)).length != 0 )
+      if ( $(this).closest($(event.target)).length != 0 || this == event.target ){
         messenger.sendMessage({
-          "put": true,
-          "element": { 
-            "name": user_e.attr('class')!='' ? (user_e[0].tagName+'.'+user_e.attr('class')):user_e[0].tagName,
-          } 
+          'put': true,
+          'notice': { 'id': $(this).data('letMeKnowID') } 
         });
+      }
     });
   }
   function activate_selection(){
@@ -22,12 +25,22 @@
       event.preventDefault();
       event.stopPropagation();
       event.cancelBubble=true;
-      user_e = $(event.target);
-      if ( $('#lmk-toolbar').has($(event.target)).length == 0 )
-        if ( watched_e.indexOf(user_e) < 0 ){
-          watched_e.push( user_e );
-          activate_change_monitor( user_e );
+      var _this = event.target;
+      if ( $(_this).closest('#lmk-toolbar').length == 0 ){ 
+        var id = _this.id ? '#'+_this.id:'';
+        var klass = _this.className ? '.'+_this.className:'';
+        var notification = {
+          'selector': _this.localName+id+klass,
+          'url': document.URL 
+        };
+        if ( watched_e.indexOf( _this ) < 0 ){
+          watched_e.push( _this );
+          messenger.register({
+            "put": true,
+            "register": notification
+          }, _this );
         }
+      }
       return false;
     });
   }
@@ -37,12 +50,17 @@
       $(this).attr('disabled',true);
       $('button.stop-selecting').removeAttr('disabled');
       activate_selection();
+      return false;
     });
     // STOP selecting button
     $('button.stop-selecting').on('click',function(){
       $(this).attr('disabled',true);
       $('button.start-selecting').removeAttr('disabled');    
       $(document).off('click');
+      $.each(watched_e,function(){
+        activate_change_monitor( this );
+      });
+      return false;
     });  
   }
 

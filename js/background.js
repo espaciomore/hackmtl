@@ -1,5 +1,13 @@
 (function(){
-  var alerts = {};
+  var alerts = [];
+  var sites = [];
+  function getAlerts(){
+    var list = [];
+    for( var i in alerts )
+      if ( alerts[i]['count']>0 )
+        list.push( alerts[i] );   
+    return list; 
+  }
 
   var messenger = MESSENGER || {};
   messenger.getForegroundMessage = function( request,sender,sendMessage ) {
@@ -11,27 +19,25 @@
           sendMessage({ "template": data });
         });
       } else {
-        list = [];
-        for( var title in alerts ){
-          for( var element in alerts[ title ] )
-            list.push( title+' : '+element);
-        }
-        sendMessage({ "notifications": list });
+        sendMessage({ "notifications": getAlerts() });
       }
     } else if ( request.put ) {
-      if ( !( sender.tab.title in alerts ) ){
-        alerts[ sender.tab.title ] = {};
-        if ( !( request.element.name in alerts[sender.tab.title] ) ){
-          alerts[ sender.tab.title ][ request.element.name ] = {};
-          chrome.browserAction.setIcon({
-            path: "../images/bells/bell_19_red.png"
-          });
-        }
+      if ( request.notice ){
+        alerts[ parseInt(request['notice']['id']) ]['count']++;
+        chrome.browserAction.setIcon({
+          path: "../images/bells/bell_19_red.png"
+        });
+      } else if ( request.register ){
+        alerts.push( request.register );
+        var id = alerts.indexOf( request.register );
+        alerts[id]['id'] = id; 
+        alerts[id]['count'] = 0;
+        sendMessage( alerts[id] );
       }
     } else if ( request['delete'] ) {
-      if ( request.notification!=undefined ){
-        delete alerts[ request.notification ];
-        if ( Object.keys(alerts).length == 0 ) {
+      if ( request['id']!=undefined ){
+        delete alerts[ parseInt(request['id']) ];
+        if ( getAlerts().length == 0 ) {
           chrome.browserAction.setIcon({
             path: "../images/bells/bell_19_green.png"
           });
