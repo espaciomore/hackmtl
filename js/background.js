@@ -1,5 +1,5 @@
 (function(){
-  
+
   var alerts = [];
   function getAlerts(){
     var list = [];
@@ -13,11 +13,15 @@
   messenger.getForegroundMessage = function( request,sender,sendMessage ) {
     if ( request.get ) {
       if ( request.template!=undefined ){
-        $.get( "../html/"+request.template,function(data){
-          //
-        }).done(function(data){
-          sendMessage({ "template": data });
-        });
+        if ( window.parent.document.html == undefined && request.url == sender.url ){
+          $.get( "../html/"+request.template,function(data){
+            //
+          }).done(function(data){
+            sendMessage({ "template": data });
+          });
+        } else {
+          sendMessage( false );
+        }
       } else {
         sendMessage({ "notifications": getAlerts() });
       }
